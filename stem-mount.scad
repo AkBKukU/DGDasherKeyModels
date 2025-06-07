@@ -1,4 +1,18 @@
 $fn=64;
+
+base = [4.75,3.75];
+
+tip = [3.75,2.75];
+height = 11.5;
+
+split = 1.5;
+split_depth = 7;
+
+sphere_depth = 7.75;
+sphere_radius = 2.25;
+sphere_exposed = 2;
+
+
 module wedge(b=[1,1],t=[1,1],h=10,to=[0,0])
 {
     hull()
@@ -9,25 +23,31 @@ module wedge(b=[1,1],t=[1,1],h=10,to=[0,0])
             cube([t[0],t[1],0.00001],true);
     };
 }
+
+
+module dasher_stem()
+{
 difference()
 {
 union()
     {
-        wedge([4.75,3.75],[3.75,2.75],11.5,[0,0.5]);
+        wedge(base,tip,height,[0,(base.y - tip.y)/2]);
         intersection()
         {
-        translate([0,0.3,7.75])sphere(4.5/2,true);
-            translate([0,0.3,0])cube([100,2.2,100],true);
+            translate([0,((base.y-tip.y)*(sphere_depth/height))/2,sphere_depth])sphere(sphere_radius,true);
+            translate([0,((base.y-tip.y)*(sphere_depth/height))/2,0])cube([base.x*2,sphere_exposed,100],true);
         }
     }
-translate([0,0,11.5-7])
+translate([0,0,height-split_depth])
     {
-        translate([0,5,0])rotate([90,0,0])cylinder(h=10,r=1.5/2);
-        wedge([1.5,5.75],[1.5,3.75],8,[0,0.5]);
+        translate([0,base.x,0])rotate([90,0,0])cylinder(h=base.x*2,r=split/2);
+        wedge([split,base.y+2],[split,tip.y+2],split_depth+1,[0,0.5]);
     }
     
-translate([0,0,11.5-1])
+translate([0,0,height-1])
     {
-        wedge([1.5,5.75],[2.5,5.75],1,[0,0.5]);
+        wedge([split,base.y+2],[split+1,base.y+2],1,[0,0]);
     }
 }
+}
+dasher_stem();
